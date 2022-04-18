@@ -36,6 +36,15 @@ class Vendor(models.Model):
     users = models.ManyToManyField(get_user_model(), blank=True)
 
 
+def eway_bill_directory_path(instance, filename):
+
+    return "eway_bill/{}.{}".format(filename, "jpg")
+
+def delivery_challan_directory_path(instance, filename):
+
+    return "delivery_challan/{}.{}".format(filename, "jpg")
+
+
 class Requests(models.Model):
     consignor = models.ForeignKey(get_user_model(), blank=False, null=False, on_delete=models.PROTECT)
     shipment_pickup = models.CharField("Vendor Code", max_length=255, blank=True, null=True)
@@ -51,5 +60,9 @@ class Requests(models.Model):
     transporter_gstin = models.CharField("GSTIN Transporter", max_length=255, blank=True, null=True)
     email = models.CharField("Mail ID", max_length=255, blank=True, null=True)
     phone = models.CharField("Phone Number", max_length=255, blank=True, null=True)
+    alternate = models.CharField("Alternate", max_length=255, blank=True, null=True)
     status = models.CharField("Vendor Delivery Status", max_length=255, blank=True, null=True)
     confirmation_status = models.CharField("Employee Delivery Status", max_length=255, blank=True, null=True)
+    eway_bill = models.FileField(upload_to=eway_bill_directory_path, max_length=254, blank=True, null=True)
+    delivery_challan = models.FileField(upload_to=delivery_challan_directory_path, max_length=254, blank=True, null=True)
+    vendor = models.ForeignKey(Vendor, related_name="requests", blank=True, null=True, on_delete=models.CASCADE)
