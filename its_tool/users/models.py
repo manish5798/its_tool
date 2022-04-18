@@ -66,7 +66,6 @@ class UserProfile(models.Model):
     first_name = models.CharField(max_length=255, blank=False, null=False)
     last_name = models.CharField(max_length=255, blank=False, null=False)
     gender = models.CharField(max_length=255, blank=True, null=True)
-    last_login = models.DateTimeField(blank=True, null=True)
     is_deleted = models.BooleanField(null=True)
     is_verified = models.BooleanField(null=True)
     profile_picture = models.FileField(upload_to=profile_picture_directory_path, max_length=254, blank=True, null=True)

@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.utils import timezone
 from its_tool.users.models import Address
 
 def logos_directory_path(instance, filename):
@@ -15,14 +16,6 @@ class Entity(models.Model):
     address = models.ForeignKey(Address, on_delete=models.CASCADE, null=True)
     logo = models.FileField(upload_to=logos_directory_path, max_length=254, blank=True, null=True)
     users = models.ManyToManyField(get_user_model(), blank=True)
-
-
-class Location(models.Model):
-    name = models.CharField("Location Name", max_length=255, blank=False, null=False)
-    latitude = models.CharField("Location Latitude", max_length=255, blank=False, null=False)
-    longitude = models.CharField("Location Longitude", max_length=255, blank=False, null=False)
-    pincode = models.CharField("Location Pincode", max_length=255, blank=True, null=True)
-    description = models.CharField("Location Description", max_length=255, blank=True, null=True)
 
 
 class Department(models.Model):
@@ -47,22 +40,32 @@ def delivery_challan_directory_path(instance, filename):
 
 class Requests(models.Model):
     consignor = models.ForeignKey(get_user_model(), blank=False, null=False, on_delete=models.PROTECT)
-    shipment_pickup = models.CharField("Vendor Code", max_length=255, blank=True, null=True)
-    shipment_location = models.ForeignKey(Location, related_name="requests", on_delete=models.CASCADE)
+    shipment_pickup = models.CharField("Shipment Pickup", max_length=255, blank=True, null=True)
+    shipment_location = models.CharField("Shipment Location", max_length=255, blank=True, null=True)
     employee_name = models.CharField("Employee Name", max_length=255, blank=True, null=True)
     employee_service_line = models.CharField("Employee Service Line", max_length=255, blank=True, null=True)
     serial_number = models.CharField("Serial Number", max_length=255, blank=True, null=True)
     address = models.ForeignKey(Address, on_delete=models.CASCADE, null=True)
     assets = models.CharField("Assets", max_length=255, blank=True, null=True)
     assets_description = models.CharField("Assets Description", max_length=255, blank=True, null=True)
-    laptop_taxable_value = models.CharField("Taxable Value", max_length=255, blank=True, null=True)
+    taxable_value = models.CharField("Taxable Value", max_length=255, blank=True, null=True)
     transporter = models.CharField("Transporter", max_length=255, blank=True, null=True)
     transporter_gstin = models.CharField("GSTIN Transporter", max_length=255, blank=True, null=True)
     email = models.CharField("Mail ID", max_length=255, blank=True, null=True)
     phone = models.CharField("Phone Number", max_length=255, blank=True, null=True)
     alternate = models.CharField("Alternate", max_length=255, blank=True, null=True)
-    status = models.CharField("Vendor Delivery Status", max_length=255, blank=True, null=True)
-    confirmation_status = models.CharField("Employee Delivery Status", max_length=255, blank=True, null=True)
     eway_bill = models.FileField(upload_to=eway_bill_directory_path, max_length=254, blank=True, null=True)
     delivery_challan = models.FileField(upload_to=delivery_challan_directory_path, max_length=254, blank=True, null=True)
     vendor = models.ForeignKey(Vendor, related_name="requests", blank=True, null=True, on_delete=models.CASCADE)
+    status = models.CharField("Vendor Delivery Status", max_length=255, blank=True, null=True)
+    confirmation_status = models.CharField("Employee Delivery Status", max_length=255, blank=True, null=True)
+    its_approved = models.BooleanField(default=False)
+    dc_approved = models.BooleanField(default=False)
+    mailroom_approved = models.BooleanField(default=False)
+
+
+class Activity(models.Model):
+    request_id = models.ForeignKey(Requests, related_name="events", on_delete=models.CASCADE)
+    activity = models.CharField("Activity", max_length=255, blank=False, null=False)
+    location = models.CharField("Activity Location", max_length=255, blank=True, null=True)
+    timestamp = models.DateTimeField(default=timezone.now)
