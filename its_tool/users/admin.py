@@ -8,6 +8,7 @@ from its_tool.users.forms import UserAdminChangeForm, UserAdminCreationForm
 
 User = get_user_model()
 
+admin.site.site_header = "ITS Tool"
 
 @admin.register(User)
 class UserAdmin(auth_admin.UserAdmin):

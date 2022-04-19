@@ -6,4 +6,5 @@ from organization import models
 admin.site.register(models.Entity)
 admin.site.register(models.Department)
 admin.site.register(models.Vendor)
+admin.site.register(models.Activity)
 admin.site.register(models.Requests)
